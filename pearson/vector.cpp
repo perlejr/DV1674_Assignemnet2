@@ -5,7 +5,8 @@ Author: David Holmqvist <daae19@student.bth.se>
 #include "vector.hpp"
 #include <iostream>
 #include <cmath>
-#include <vector>
+// #include <vector>
+#include <cstring>
 
 Vector::Vector()
     : size{0}, data{nullptr}
@@ -34,11 +35,9 @@ Vector::Vector(unsigned size, double *data)
 
 Vector::Vector(const Vector &other)
     : Vector{other.size}
-{
-    for (auto i{0}; i < size; i++)
-    {
-        data[i] = other.data[i];
-    }
+{   
+    size = other.size;
+    std::memcpy(data, other.data, size);
 }
 
 unsigned Vector::get_size() const
