@@ -62,12 +62,34 @@ double &Vector::operator[](unsigned i)
 
 double Vector::mean() const
 {
-    double sum{0};
+    //  double sum{0};
 
-    for (auto i{0}; i < size; i++)
+    // for (auto i{0}; i < size; i++)
+    // {
+    //     sum += data[i];
+    // }
+
+    // return sum / static_cast<double>(size);
+    double sum{0};
+    unsigned t1 = 0, t2 = 0, t3 = 0, t4 = 0;
+    unsigned mover = 4;
+    for (auto i{0}; i < size; i += mover)
     {
-        sum += data[i];
+        if ((i + mover) <= size) {
+            t1 += data[i];
+            t2 += data[i + 1];
+            t3 += data[i + 2];
+            t4 += data[i + 3];
+        }
+        else{
+            for (auto z{i}; z < size; ++z){
+                t1 += data[z];
+            }
+            break;
+        }
     }
+
+    sum = t1 + t2 + t3 + t4;
 
     return sum / static_cast<double>(size);
 }
