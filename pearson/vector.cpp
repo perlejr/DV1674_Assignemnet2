@@ -35,9 +35,13 @@ Vector::Vector(unsigned size, double *data)
 
 Vector::Vector(const Vector &other)
     : Vector{other.size}
-{   
+{ 
+    // for (auto i{0}; i < size; i++)
+    // {
+    //     data[i] = other.data[i];
+    // }
     size = other.size;
-    std::memcpy(data, other.data, size);
+    std::memcpy(data, other.data, (size * sizeof(other.data[0])));
 }
 
 unsigned Vector::get_size() const
@@ -71,7 +75,7 @@ double Vector::mean() const
 
     // return sum / static_cast<double>(size);
     double sum{0};
-    unsigned t1 = 0, t2 = 0, t3 = 0, t4 = 0;
+    double t1 = 0, t2 = 0, t3 = 0, t4 = 0;
     unsigned mover = 4;
     for (auto i{0}; i < size; i += mover)
     {
