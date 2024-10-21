@@ -1,0 +1,23 @@
+# ignore ALL .log files
+# *.log
+
+# ignore ALL files in ANY directory named temp
+# temp/
+pearson/analysis.o
+pearson/anal.txt
+pearson/dataset.o
+pearson/gmon.out
+pearson/outfile
+pearson/outfile.data
+pearson/vector.o
+pearson/pearson
+pearson/pearson_par
+pearson/output.data
+
+blur/blur
+blur/filters.o
+blur/matrix.o
+blur/outfile
+blur/output.ppm
+blur/outputa.ppm
+blur/ppm.o

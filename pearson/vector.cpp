@@ -5,7 +5,8 @@ Author: David Holmqvist <daae19@student.bth.se>
 #include "vector.hpp"
 #include <iostream>
 #include <cmath>
-#include <vector>
+// #include <vector>
+#include <cstring>
 
 Vector::Vector()
     : size{0}, data{nullptr}
@@ -34,11 +35,13 @@ Vector::Vector(unsigned size, double *data)
 
 Vector::Vector(const Vector &other)
     : Vector{other.size}
-{
-    for (auto i{0}; i < size; i++)
-    {
-        data[i] = other.data[i];
-    }
+{ 
+    // for (auto i{0}; i < size; i++)
+    // {
+    //     data[i] = other.data[i];
+    // }
+    size = other.size;
+    std::memcpy(data, other.data, (size * sizeof(other.data[0])));
 }
 
 unsigned Vector::get_size() const
@@ -63,12 +66,34 @@ double &Vector::operator[](unsigned i)
 
 double Vector::mean() const
 {
-    double sum{0};
+    //  double sum{0};
 
-    for (auto i{0}; i < size; i++)
+    // for (auto i{0}; i < size; i++)
+    // {
+    //     sum += data[i];
+    // }
+
+    // return sum / static_cast<double>(size);
+    double sum{0};
+    double t1 = 0, t2 = 0, t3 = 0, t4 = 0;
+    unsigned mover = 4;
+    for (auto i{0}; i < size; i += mover)
     {
-        sum += data[i];
+        if ((i + mover) <= size) {
+            t1 += data[i];
+            t2 += data[i + 1];
+            t3 += data[i + 2];
+            t4 += data[i + 3];
+        }
+        else{
+            for (auto z{i}; z < size; ++z){
+                t1 += data[z];
+            }
+            break;
+        }
     }
+
+    sum = t1 + t2 + t3 + t4;
 
     return sum / static_cast<double>(size);
 }
