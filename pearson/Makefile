@@ -19,6 +19,9 @@ dataset: vector dataset.hpp dataset.cpp
 
 vector: vector.hpp vector.cpp
 	$(CXX) $(CXXFLAGS) -c vector.cpp -o vector.o
+
+verify: verify.c
+	$(CC) verify.c -o verify
 	
 clean:
 	rm -rf pearson *.o *.dSYM 2> /dev/null
