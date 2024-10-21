@@ -1,7 +1,7 @@
 # Author: David Holmqvist <daae19@student.bth.se>
-#Heloo
+
 CXX=g++
-CXXFLAGS=-std=c++17 -g -Wunused -Wall -Wunused -pg -Ofast -mavx2
+CXXFLAGS=-std=c++17 -g -Wunused -Wall -Wunused -Ofast -mavx2
 
 all: blur
 

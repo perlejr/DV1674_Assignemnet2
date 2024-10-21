@@ -1,7 +1,7 @@
 # Author: David Holmqvist <daae19@student.bth.se>
 
 CXX=g++
-CXXFLAGS=-std=c++17 -g -Wunused -Wall -Wunused -pg -o3 -funroll-all-loops -ffast-math
+CXXFLAGS=-std=c++17 -g -Wunused -Wall -Wunused -o3 -funroll-all-loops -ffast-math
 
 all: pearson pearson_par verify
 

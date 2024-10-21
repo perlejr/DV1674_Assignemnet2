@@ -7,10 +7,8 @@ Author: David Holmqvist <daae19@student.bth.se>
 #include <cmath>
 #include <iostream>
 #include <list>
-#include <memory>
 #include <vector>
 #include <pthread.h>
-#include <atomic>
 
 
 namespace Analysis {
@@ -22,7 +20,6 @@ struct arguments
     unsigned from_index;
     std::vector<Vector> datasets;
     std::vector<double> local_result;
-    unsigned int max_size = 128;
 };
 
 std::vector<double> correlation_coefficients_threads(std::vector<Vector> datasets, unsigned nthreads)
