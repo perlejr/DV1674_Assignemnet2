@@ -9,7 +9,7 @@ Author: David Holmqvist <daae19@student.bth.se>
 
 int main(int argc, char const* argv[])
 {
-    if (argc != 3) {
+    if ((argc != 4)  && (argc != 3) ) {
         std::cerr << "Usage: " << argv[0] << " [dataset] [outfile] [threads]" << std::endl;
         std::exit(1);
     }
@@ -18,7 +18,8 @@ int main(int argc, char const* argv[])
     unsigned nThreads = 1;
     if (argv[3]) {
         nThreads = atoi(argv[3]);
-        auto corrs { Analysis::correlation_coefficients(datasets, nThreads) };
+        auto corrs { Analysis::correlation_coefficients_threads(datasets, nThreads) };
+        Dataset::write(corrs, argv[2]);
     } else {
         auto corrs { Analysis::correlation_coefficients(datasets) };
         Dataset::write(corrs, argv[2]);

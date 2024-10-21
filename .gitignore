@@ -11,6 +11,8 @@ pearson/outfile
 pearson/outfile.data
 pearson/vector.o
 pearson/pearson
+pearson/pearson_par
+pearson/output.data
 
 blur/blur
 blur/filters.o
