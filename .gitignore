@@ -13,6 +13,7 @@ pearson/vector.o
 pearson/pearson
 pearson/pearson_par
 pearson/output.data
+pearson/verify
 
 blur/blur
 blur/filters.o
