@@ -49,7 +49,7 @@ namespace Dataset
     void write(std::vector<double> data, std::string filename)
     {
         std::ofstream f{};
-
+        
         f.open(filename);
 
         if (!f)

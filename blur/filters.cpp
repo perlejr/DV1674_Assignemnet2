@@ -41,9 +41,6 @@ namespace Filter
     Matrix blur_threads(Matrix m, const int radius, unsigned int nthreads)
     {
         dst = m;
-        std::cout << "M x size: " << m.get_x_size() << "\n";
-        std::cout << "DST x size: " << dst.get_x_size() << "\n";
-        std::cout << "DST y size: " << dst.get_y_size() << "\n";
         unsigned dst_x_size_per_thread = (dst.get_x_size() / nthreads);
         unsigned dst_y_size = dst.get_y_size();
         std::vector<pthread_t> threads {nthreads};
@@ -51,7 +48,6 @@ namespace Filter
         for(unsigned int i = 0; i < nthreads; ++i){
             arguments* new_arg = new arguments();
             new_arg->thread_nr = i;
-            //new_arg->local_dst = dst;
             new_arg->from_index = i * dst_x_size_per_thread;
             new_arg->local_dst_x_size = dst_x_size_per_thread;
             new_arg->local_dst_y_size = dst_y_size;
@@ -74,35 +70,21 @@ namespace Filter
     void* blur(void* params)
     {
         arguments* args = reinterpret_cast<arguments*>(params);
-            std::cout << "In thread: " << args->thread_nr <<"\n";
 
         Matrix scratch{PPM::max_dimension};
         
         for (auto x = args->from_index; x < (args->local_dst_x_size + args->from_index); x++)
         {
-            std::cout << "Thread " << args->thread_nr << " || first iteraction: " << x <<"\n";
             for (auto y{0}; y < args->local_dst_y_size; y++)
             {
                 double w[Gauss::max_radius]{};
                 Gauss::get_weights(args->local_radius, w);
-
-                // unsigned char Matrix::r(unsigned x, unsigned y) const
-                // {
-                //     return R[y * x_size + x];
-                // }
-
                 auto r{w[0] * dst.r(x, y)}, g{w[0] * dst.g(x, y)}, b{w[0] * dst.b(x, y)}, n{w[0]};
-                
-                // for (auto wi{1}; wi <= radius; wi++)    
                 for (int wi{1}; wi <= args->local_radius; wi++)
                 {
                     auto wc{w[wi]};
-                    unsigned int x2{x - wi};
-                    //if (x2 >= 0)
-                    std::cout << "problem wi: " << wi << "\n";
-                    std::cout << "problem x: " << x << "\n";
-                    std::cout << "problem x2: " << x2 << "\n";
-                    if (x2 > args->local_dst_x_size && x2 < (args->local_dst_x_size + args->from_index))
+                    int x2{x - wi};
+                    if (x2 >= 0)
                     {
                         r += wc * dst.r(x2, y);
                         g += wc * dst.g(x2, y);
@@ -110,9 +92,7 @@ namespace Filter
                         n += wc;
                     }
                     x2 = x + wi;
-                    std::cout << "no problem x2: " << x2 << "\n";
                     if (x2 < (args->local_dst_x_size + args->from_index))
-                    //if (x2 < dst.get_x_size())
                     {
                         r += wc * dst.r(x2, y);
                         g += wc * dst.g(x2, y);
@@ -128,7 +108,6 @@ namespace Filter
 
         for (auto x{args->from_index}; x < (args->local_dst_x_size + args->from_index); x++)
         {
-            std::cout << "Thread " << args->thread_nr << " || second iteraction: " << x <<"\n";
             for (auto y{0}; y < args->local_dst_y_size; y++)
             {
                 double w[Gauss::max_radius]{};
