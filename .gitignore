@@ -22,3 +22,6 @@ blur/outfile
 blur/output.ppm
 blur/outputa.ppm
 blur/ppm.o
+blur/16
+blur/blur_par
+pearson/output_par.data
