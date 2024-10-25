@@ -18,15 +18,12 @@ namespace Filter
 
     struct arguments
     {
-        //Matrix local_dst;
         int local_radius;
         unsigned thread_nr;
         unsigned dst_x_size;
         unsigned dst_y_size;
         unsigned from_x_index;
         unsigned to_x_index;
-        unsigned from_y_index;
-        unsigned to_y_index;
     };
 
     namespace Gauss
@@ -54,7 +51,6 @@ namespace Filter
             arguments* new_arg = new arguments();
             new_arg->thread_nr = i;
             new_arg->from_x_index = i * dst_x_chunk_per_thread;
-            new_arg->from_y_index = i * dst_y_chunk_per_thread;
             new_arg->dst_x_size = dst_x_size;
             new_arg->dst_y_size = dst_y_size;
             new_arg->local_radius = radius;
@@ -62,11 +58,6 @@ namespace Filter
                 new_arg->to_x_index = dst_x_size;
             } else {
                 new_arg->to_x_index = dst_x_chunk_per_thread + (i * dst_x_chunk_per_thread);
-            }
-            if (i == nthreads - 1){
-                new_arg->to_y_index = dst_y_size;
-            } else {
-                new_arg->to_y_index = dst_y_chunk_per_thread + (i * dst_y_chunk_per_thread);
             }
 
             thread_args.push_back(new_arg);
