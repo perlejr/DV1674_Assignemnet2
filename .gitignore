@@ -25,3 +25,7 @@ blur/ppm.o
 blur/16
 blur/blur_par
 pearson/output_par.data
+blur/data_o/blur_im1_seq.ppm
+blur/data_o/blur_im2_seq.ppm
+blur/data_o/blur_im3_seq.ppm
+blur/data_o/blur_im4_seq.ppm
