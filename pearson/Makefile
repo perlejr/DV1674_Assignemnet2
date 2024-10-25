@@ -1,15 +1,15 @@
 # Author: David Holmqvist <daae19@student.bth.se>
 
 CXX=g++
-CXXFLAGS=-std=c++17 -g -Wunused -Wall -funroll-all-loops -ffast-math
+CXXFLAGS=-std=c++17 -g -Wunused -Wall -funroll-all-loops -ffast-math -lpthread
 
-all: pearson pearson_par verify
+all: pearson verify pearson_par
 
 pearson: vector dataset analysis pearson.cpp 
 	$(CXX) $(CXXFLAGS) -Ofast pearson.cpp vector.o dataset.o analysis.o -o pearson
 
 pearson_par: vector dataset analysis pearson.cpp
-	$(CXX) $(CXXFLAGS) -Ofast pearson.cpp vector.o dataset.o analysis.o -lpthread -o pearson_par
+	$(CXX) $(CXXFLAGS) -Ofast pearson.cpp vector.o dataset.o analysis.o -o pearson_par
 
 analysis: vector analysis.hpp analysis.cpp
 	$(CXX) $(CXXFLAGS) -c analysis.cpp -o analysis.o
@@ -19,9 +19,9 @@ dataset: vector dataset.hpp dataset.cpp
 
 vector: vector.hpp vector.cpp
 	$(CXX) $(CXXFLAGS) -Ofast -c vector.cpp -o vector.o
-
+	
 verify: verify.c
 	$(CC) verify.c -o verify
- 
+
 clean:
 	rm -rf verify pearson pearson_par *.o *.dSYM 2> /dev/null

@@ -29,3 +29,7 @@ blur/data_o/blur_im1_seq.ppm
 blur/data_o/blur_im2_seq.ppm
 blur/data_o/blur_im3_seq.ppm
 blur/data_o/blur_im4_seq.ppm
+pearson/data_o/128_seq.data
+pearson/data_o/256_seq.data
+pearson/data_o/1024_seq.data
+pearson/data_o/512_seq.data
