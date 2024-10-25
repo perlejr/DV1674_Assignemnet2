@@ -13,17 +13,20 @@ Author: David Holmqvist <daae19@student.bth.se>
 namespace Filter
 {
     Matrix dst = Matrix();
+    Matrix scratch{PPM::max_dimension};
 
 
     struct arguments
     {
         //Matrix local_dst;
-        Matrix local_m;
         int local_radius;
         unsigned thread_nr;
-        unsigned local_dst_x_size;
-        unsigned local_dst_y_size;
-        unsigned from_index;
+        unsigned dst_x_size;
+        unsigned dst_y_size;
+        unsigned from_x_index;
+        unsigned to_x_index;
+        unsigned from_y_index;
+        unsigned to_y_index;
     };
 
     namespace Gauss
@@ -41,20 +44,41 @@ namespace Filter
     Matrix blur_threads(Matrix m, const int radius, unsigned int nthreads)
     {
         dst = m;
-        unsigned dst_x_size_per_thread = (dst.get_x_size() / nthreads);
+        unsigned dst_x_size = dst.get_x_size();
         unsigned dst_y_size = dst.get_y_size();
+        unsigned dst_x_chunk_per_thread = (dst_x_size / nthreads);
+        unsigned dst_y_chunk_per_thread = (dst_y_size / nthreads);
         std::vector<pthread_t> threads {nthreads};
         std::vector<arguments*> thread_args;
         for(unsigned int i = 0; i < nthreads; ++i){
             arguments* new_arg = new arguments();
             new_arg->thread_nr = i;
-            new_arg->from_index = i * dst_x_size_per_thread;
-            new_arg->local_dst_x_size = dst_x_size_per_thread;
-            new_arg->local_dst_y_size = dst_y_size;
+            new_arg->from_x_index = i * dst_x_chunk_per_thread;
+            new_arg->from_y_index = i * dst_y_chunk_per_thread;
+            new_arg->dst_x_size = dst_x_size;
+            new_arg->dst_y_size = dst_y_size;
             new_arg->local_radius = radius;
+            if (i == nthreads - 1){
+                new_arg->to_x_index = dst_x_size;
+            } else {
+                new_arg->to_x_index = dst_x_chunk_per_thread + (i * dst_x_chunk_per_thread);
+            }
+            if (i == nthreads - 1){
+                new_arg->to_y_index = dst_y_size;
+            } else {
+                new_arg->to_y_index = dst_y_chunk_per_thread + (i * dst_y_chunk_per_thread);
+            }
 
             thread_args.push_back(new_arg);
-            pthread_create(&threads[i], NULL,  blur, (void*) thread_args[i]);
+        }
+        for (int i = 0; i < nthreads; i++) {
+            pthread_create(&threads[i], NULL,  blur_x, (void*) thread_args[i]);
+        }
+        for (int i = 0; i < nthreads; i++) {
+            pthread_join(threads[i], NULL);
+        }
+        for (int i = 0; i < nthreads; i++) {
+            pthread_create(&threads[i], NULL,  blur_y, (void*) thread_args[i]);
         }
         for (int i = 0; i < nthreads; i++) {
             pthread_join(threads[i], NULL);
@@ -67,15 +91,12 @@ namespace Filter
     }
 
 
-    void* blur(void* params)
+    void* blur_x(void* params)
     {
         arguments* args = reinterpret_cast<arguments*>(params);
-
-        Matrix scratch{PPM::max_dimension};
-        
-        for (auto x = args->from_index; x < (args->local_dst_x_size + args->from_index); x++)
+        for (auto x = args->from_x_index; x < args->to_x_index; x++)
         {
-            for (auto y{0}; y < args->local_dst_y_size; y++)
+            for (auto y{0}; y < args->dst_y_size; y++)
             {
                 double w[Gauss::max_radius]{};
                 Gauss::get_weights(args->local_radius, w);
@@ -92,7 +113,7 @@ namespace Filter
                         n += wc;
                     }
                     x2 = x + wi;
-                    if (x2 < (args->local_dst_x_size + args->from_index))
+                    if (x2 < args->dst_x_size)
                     {
                         r += wc * dst.r(x2, y);
                         g += wc * dst.g(x2, y);
@@ -105,10 +126,14 @@ namespace Filter
                 scratch.b(x, y) = b / n;
             }
         }
+    }
 
-        for (auto x{args->from_index}; x < (args->local_dst_x_size + args->from_index); x++)
+    void* blur_y(void* params)
+    {
+        arguments* args = reinterpret_cast<arguments*>(params);
+        for (auto x = args->from_x_index; x < args->to_x_index; x++)
         {
-            for (auto y{0}; y < args->local_dst_y_size; y++)
+            for (auto y{0}; y < args->dst_y_size; y++)
             {
                 double w[Gauss::max_radius]{};
                 Gauss::get_weights(args->local_radius, w);
@@ -118,7 +143,7 @@ namespace Filter
                 for (auto wi{1}; wi <= args->local_radius; wi++)
                 {
                     auto wc{w[wi]};
-                    auto y2{y - wi};
+                    int y2{y - wi};
                     if (y2 >= 0)
                     {
                         r += wc * scratch.r(x, y2);
@@ -127,7 +152,7 @@ namespace Filter
                         n += wc;
                     }
                     y2 = y + wi;
-                    if (y2 < args->local_dst_y_size)
+                    if (y2 < args->dst_y_size)
                     {
                         r += wc * scratch.r(x, y2);
                         g += wc * scratch.g(x, y2);
@@ -142,10 +167,10 @@ namespace Filter
         }
     }
 
+    
 
     Matrix blur(Matrix m, const int radius)
     {
-        Matrix scratch{PPM::max_dimension};
         auto dst{m};
         unsigned dst_x_size = dst.get_x_size();
         unsigned dst_y_size = dst.get_y_size();

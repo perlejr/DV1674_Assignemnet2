@@ -6,6 +6,10 @@ status=0
 red=$(tput setaf 1)
 reset=$(tput sgr0)
 
+for image in im1 im2 im3 im4
+    do
+        ./blur 15 "data/$image.ppm" "./data_o/blur_${image}_seq.ppm"
+done
 for thread in 1 2 4 8 16 32
 do
     for image in im1 im2 im3 im4

@@ -21,7 +21,8 @@ namespace Filter
 
     Matrix blur_threads(Matrix m, const int radius, unsigned int nthreads);
     Matrix blur(Matrix m, const int radius);
-    void* blur(void* params);
+    void* blur_x(void* params);
+    void* blur_y(void* params);
 
 }
 
