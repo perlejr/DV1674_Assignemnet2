@@ -19,7 +19,6 @@ namespace Filter
     struct arguments
     {
         int local_radius;
-        unsigned thread_nr;
         unsigned dst_x_size;
         unsigned dst_y_size;
         unsigned from_x_index;
@@ -45,11 +44,10 @@ namespace Filter
         unsigned dst_y_size = dst.get_y_size();
         unsigned dst_x_chunk_per_thread = (dst_x_size / nthreads);
         unsigned dst_y_chunk_per_thread = (dst_y_size / nthreads);
-        std::vector<pthread_t> threads {nthreads};
+        pthread_t threads[nthreads];
         std::vector<arguments*> thread_args;
         for(unsigned int i = 0; i < nthreads; ++i){
             arguments* new_arg = new arguments();
-            new_arg->thread_nr = i;
             new_arg->from_x_index = i * dst_x_chunk_per_thread;
             new_arg->dst_x_size = dst_x_size;
             new_arg->dst_y_size = dst_y_size;
@@ -59,7 +57,6 @@ namespace Filter
             } else {
                 new_arg->to_x_index = dst_x_chunk_per_thread + (i * dst_x_chunk_per_thread);
             }
-
             thread_args.push_back(new_arg);
         }
         for (int i = 0; i < nthreads; i++) {
